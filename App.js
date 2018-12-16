@@ -5,9 +5,11 @@
  * @format
  * @flow
  */
+ //command R to force reload
+ //command D to enable auto reload
 
 import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View} from 'react-native';
+import {Platform, StyleSheet, Text, View, TextInput} from 'react-native';
 
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
@@ -18,10 +20,25 @@ const instructions = Platform.select({
 
 type Props = {};
 export default class App extends Component<Props> {
+  state = {
+    placeName: ''
+  }
+
+  placeNameChangedHandler = val => {
+    this.setState({
+      placeName: val
+    })
+  }
+
   render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.welcome}>Ok</Text>
+        <TextInput
+          style = {{width: 100}}
+          value = {this.state.placeName}
+          onChangeText = {this.placeNameChangedHandler}
+          placeholder = "Joe"
+        /> 
       </View>
     );
   }
