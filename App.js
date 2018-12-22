@@ -5,40 +5,61 @@
  * @format
  * @flow
  */
- //command R to force reload
- //command D to enable auto reload
+//command R to force reload
+//command D to enable auto reload
 
-import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View, TextInput, Button} from 'react-native';
-import InputBox from './src/components/InputBox/InputBox';
-import ListContainer from './src/components/ListContainer/ListContainer';
+import React, { Component } from "react";
+import { StyleSheet, View } from "react-native";
+import InputBox from "./src/components/InputBox/InputBox";
+import ListContainer from "./src/components/ListContainer/ListContainer";
+import PlaceDetail from "./src/components/PlaceDetail/PlaceDetail";
+import placeImage from "./src/assets/image.png";
 
-const instructions = Platform.select({
-  ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
-  android:
-    'Double tap R on your keyboard to reload,\n' +
-    'Shake or press menu button for dev menu',
-});
-
-type Props = {};
+//type Props = {};
 export default class App extends Component {
   state = {
-    places: []
-  }
+    places: [],
+    selectedPlace: null
+  };
 
-  updatePlaces = (placeName) => {
-    this.setState( (prevState) => {
+  placeSelectedHandler = key => {
+    // this.setState( prevState => {
+    //   return {
+    //     places: prevState.places.filter( place => {
+    //       return place.key!==key;
+    //     })
+    //   }
+    // })
+    this.setState(prevState => {
       return {
-        places: prevState.places.concat(placeName)
-      }
-    })
-  }
+        selectedPlace: prevState.places.find(place => {
+          return place.key === key;
+        })
+      };
+    });
+  };
+
+  placeAddedHandler = placeName => {
+    this.setState(prevState => {
+      return {
+        places: prevState.places.concat({
+          key: Math.random().toString(),
+          name: placeName,
+          image: placeImage
+        })
+      };
+    });
+  };
 
   render() {
     return (
       <View style={styles.container}>
-        <InputBox addPlace = {this.updatePlaces}/>
-        <ListContainer places = {this.state.places} />
+        <PlaceDetail selectedPlace={this.state.selectedPlace} />
+        <InputBox addPlace={this.placeAddedHandler} />
+        <ListContainer
+          places={this.state.places}
+          onItemSelected={this.placeSelectedHandler}
+        />
       </View>
     );
   }
@@ -48,8 +69,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1, //this means container takes whole page
     padding: 30,
-    justifyContent: 'flex-start', //start element at beginning of page
-    alignItems: 'center',
-    backgroundColor: '#fff',
+    justifyContent: "flex-start", //start element at beginning of page
+    alignItems: "center",
+    backgroundColor: "#fff"
   }
 });
