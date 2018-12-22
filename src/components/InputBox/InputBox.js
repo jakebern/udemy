@@ -1,5 +1,5 @@
-import React, {Component} from 'react';
-import { View, Text, StyleSheet, TextInput, Button} from 'react-native';
+import React, {Component} from "react";
+import { View, StyleSheet, TextInput, Button} from 'react-native';
 
 export default class inputBox extends Component {
   state = {
