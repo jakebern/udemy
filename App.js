@@ -23,13 +23,6 @@ export default class App extends Component {
   };
 
   placeSelectedHandler = key => {
-    // this.setState( prevState => {
-    //   return {
-    //     places: prevState.places.filter( place => {
-    //       return place.key!==key;
-    //     })
-    //   }
-    // })
     this.setState(prevState => {
       return {
         selectedPlace: prevState.places.find(place => {
@@ -51,10 +44,31 @@ export default class App extends Component {
     });
   };
 
+  placeDeletedHandler = () => {
+    this.setState(prevState => {
+      return {
+        places: prevState.places.filter(place => {
+          return place.key !== prevState.selectedPlace.key;
+        }),
+        selectedPlace: null
+      };
+    });
+  };
+
+  modalClosedHandler = () => {
+    this.setState({
+      selectedPlace: null
+    });
+  };
+
   render() {
     return (
       <View style={styles.container}>
-        <PlaceDetail selectedPlace={this.state.selectedPlace} />
+        <PlaceDetail
+          selectedPlace={this.state.selectedPlace}
+          onItemDeleted={this.placeDeletedHandler}
+          onModalClosed={this.modalClosedHandler}
+        />
         <InputBox addPlace={this.placeAddedHandler} />
         <ListContainer
           places={this.state.places}
