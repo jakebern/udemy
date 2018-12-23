@@ -1,5 +1,14 @@
 import React from "react";
-import { View, Modal, Image, Text, Button, StyleSheet } from "react-native";
+import {
+	View,
+	Modal,
+	Image,
+	Text,
+	Button,
+	StyleSheet,
+	TouchableOpacity
+} from "react-native";
+import Icon from "react-native-vector-icons/Ionicons";
 
 const placeDetail = props => {
 	return (
@@ -18,7 +27,11 @@ const placeDetail = props => {
 						about if button is pressed.  Thus pass function in via parent
 						so parent can know about the press
 					*/}
-					<Button title="Delete" color="red" onPress={props.onItemDeleted} />
+					<TouchableOpacity onPress={props.onItemDeleted}>
+						<View style={styles.deleteButton}>
+							<Icon size={30} name="ios-trash" color="red" />
+						</View>
+					</TouchableOpacity>
 					<Button title="Close" onPress={props.onModalClosed} />
 				</View>
 			</View>
@@ -38,6 +51,9 @@ const styles = StyleSheet.create({
 		fontWeight: "bold",
 		textAlign: "center",
 		fontSize: 28
+	},
+	deleteButton: {
+		alignItems: "center"
 	}
 });
 
