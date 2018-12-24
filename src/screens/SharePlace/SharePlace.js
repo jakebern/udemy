@@ -7,7 +7,6 @@ import { addPlace } from "../../store/actions/index";
 
 class SharePlaceScreen extends Component {
 	placeAddedHandler = placeName => {
-		console.log("placeAddedHandler", placeName);
 		this.props.onAddPlace(placeName);
 	};
 
@@ -20,14 +19,23 @@ class SharePlaceScreen extends Component {
 	}
 }
 
+//receives dispatch function as argument
+//returns things can use as props in component
 const mapDispatchToProps = dispatch => {
 	return {
+		//bind something that can use on Props
 		onAddPlace: placeName => {
-			console.log("onAddPlace", placeName);
 			dispatch(addPlace(placeName));
 		}
 	};
 };
+
+//addPlace is function that takes in place_name
+//returns an object
+//		type: ADD_PLACE,
+//		placeName: placeName
+//this object is then passed on reducer
+//where reducer performs opps
 
 export default connect(
 	null,
