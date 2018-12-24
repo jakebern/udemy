@@ -7,7 +7,8 @@ const startTabs = () => {
 	//don't want icons to hackily show up
 	Promise.all([
 		Icon.getImageSource("md-map", 30),
-		Icon.getImageSource("ios-share-alt", 30)
+		Icon.getImageSource("ios-share-alt", 30),
+		Icon.getImageSource("ios-menu", 30)
 	]).then(sources => {
 		Navigation.startTabBasedApp({
 			tabs: [
@@ -15,15 +16,41 @@ const startTabs = () => {
 					screen: "udemy-react.FindPlaceScreen",
 					label: "Find Place",
 					title: "Find Place",
-					icon: sources[0]
+					icon: sources[0],
+					navigatorButtons: {
+						leftButtons: [
+							{
+								//button is not automatically added
+								//need to add this connection
+								icon: sources[2],
+								title: "Menu",
+								id: "sideDrawerToggle"
+							}
+						]
+					}
 				},
 				{
 					screen: "udemy-react.SharePlaceScreen",
 					label: "Share Place",
 					title: "Share Place",
-					icon: sources[1]
+					icon: sources[1],
+					navigatorButtons: {
+						leftButtons: [
+							{
+								icon: sources[2],
+								title: "Menu",
+								id: "sideDrawerToggle"
+							}
+						]
+					}
 				}
-			]
+			],
+			//but need to add drawer button to each screen
+			drawer: {
+				left: {
+					screen: "udemy-react.SideDrawer"
+				}
+			}
 		});
 	});
 };
