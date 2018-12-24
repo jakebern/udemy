@@ -3,11 +3,12 @@ import { TextInput, StyleSheet } from "react-native";
 
 const defaultInput = props => (
 	<TextInput
-		style={styles.input}
 		//	will accept all props from class eg. no need to set
 		//placeholder={props.placeholder} because will do in parent
 		{...props}
 		underlineColorAndroid="transparent"
+		style={[styles.input, props.styles]} //any styles outside of this file will override
+		//second will override the first
 	/>
 );
 
