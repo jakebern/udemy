@@ -16,6 +16,7 @@ const styles = StyleSheet.create({
 	input: {
 		width: "100%", //can be problematic to use raw pixel values since may not work on small devices.
 		borderWidth: 1,
+		backgroundColor: "#bbb",
 		borderColor: "#eee",
 		padding: 5,
 		margin: 8
