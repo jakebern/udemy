@@ -9,6 +9,11 @@ import LocationSelector from "../../components/LocationSelector/LocationSelector
 import HeadingText from "../../components/UI/HeadingText/HeadingText";
 
 class SharePlaceScreen extends Component {
+	//can either set in constructor as
+	//this.state or not.
+	state = {
+		placeName: ""
+	};
 	constructor(props) {
 		super(props);
 
@@ -16,9 +21,6 @@ class SharePlaceScreen extends Component {
 		//execute this whenever navigation event occurs
 		//since have arrow function, don't need to bind (eg. this.onNavigatorEvent.bind(this))
 		this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent);
-		this.state = {
-			placeName: ""
-		};
 	}
 	placeNameChangedHandler = val => {
 		this.setState({
@@ -26,11 +28,10 @@ class SharePlaceScreen extends Component {
 		});
 	};
 
-	placeSubmitHandler = placeName => {
-		if (this.state.placeName.trim() === "") {
-			return;
+	placeSubmitHandler = () => {
+		if (this.state.placeName.trim() !== "") {
+			this.props.onAddPlace(this.state.placeName);
 		}
-		this.props.onAddPlace(this.state.placeName.trim());
 	};
 
 	onNavigatorEvent = event => {
