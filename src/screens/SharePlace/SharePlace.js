@@ -1,19 +1,12 @@
 import React, { Component } from "react";
-import {
-	View,
-	Text,
-	TextInput,
-	Button,
-	StyleSheet,
-	ScrollView,
-	Image
-} from "react-native";
+import { View, Text, Button, StyleSheet, ScrollView } from "react-native";
 import { connect } from "react-redux";
 import { addPlace } from "../../store/actions/index";
-import DefaultInput from "../../components/UI/DefaultInput/DefaultInput";
+import InputBox from "../../components/InputBox/InputBox";
 import MainText from "../../components/UI/MainText/MainText";
+import ImageSelector from "../../components/ImageSelector/ImageSelector";
+import LocationSelector from "../../components/LocationSelector/LocationSelector";
 import HeadingText from "../../components/UI/HeadingText/HeadingText";
-import imagePlaceholder from "../../assets/image.png";
 
 class SharePlaceScreen extends Component {
 	constructor(props) {
@@ -23,7 +16,22 @@ class SharePlaceScreen extends Component {
 		//execute this whenever navigation event occurs
 		//since have arrow function, don't need to bind (eg. this.onNavigatorEvent.bind(this))
 		this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent);
+		this.state = {
+			placeName: ""
+		};
 	}
+	placeNameChangedHandler = val => {
+		this.setState({
+			placeName: val
+		});
+	};
+
+	placeSubmitHandler = placeName => {
+		if (this.state.placeName.trim() === "") {
+			return;
+		}
+		this.props.onAddPlace(this.state.placeName.trim());
+	};
 
 	onNavigatorEvent = event => {
 		//willappear, didappear, etc
@@ -40,11 +48,6 @@ class SharePlaceScreen extends Component {
 			}
 		}
 	};
-
-	placeAddedHandler = placeName => {
-		this.props.onAddPlace(placeName);
-	};
-
 	render() {
 		return (
 			<ScrollView>
@@ -52,21 +55,17 @@ class SharePlaceScreen extends Component {
 					<MainText>
 						<HeadingText>Share a place with us!</HeadingText>
 					</MainText>
-					<View style={styles.placeholder}>
-						<Image source={imagePlaceholder} style={styles.previewImage} />
-					</View>
+					<ImageSelector />
+					<LocationSelector />
+					<InputBox
+						placeName={this.state.placeName}
+						updateInput={this.placeNameChangedHandler}
+					/>
 					<View style={styles.button}>
-						<Button title="Pick Image" />
-					</View>
-					<View style={styles.placeholder}>
-						<Text>Image Preview</Text>
-					</View>
-					<View style={styles.button}>
-						<Button title="Locate Me" />
-					</View>
-					<DefaultInput placeholder="Place Name" />
-					<View style={styles.button}>
-						<Button title="Share the Place!" />
+						<Button
+							title="Share the Place!"
+							onPress={this.placeSubmitHandler}
+						/>
 					</View>
 				</View>
 			</ScrollView>
