@@ -7,6 +7,7 @@ import MainText from "../../components/UI/MainText/MainText";
 import ImageSelector from "../../components/ImageSelector/ImageSelector";
 import LocationSelector from "../../components/LocationSelector/LocationSelector";
 import HeadingText from "../../components/UI/HeadingText/HeadingText";
+import validate from "../../utility/validation";
 
 class SharePlaceScreen extends Component {
 	static navigatorStyle = {
@@ -16,7 +17,16 @@ class SharePlaceScreen extends Component {
 	//can either set in constructor as
 	//this.state or not.
 	state = {
-		placeName: ""
+		controls: {
+			placeName: {
+				value: "",
+				valid: false,
+				touched: false,
+				validationRules: {
+					notEmpty: true //value here doesn't matter
+				}
+			}
+		}
 	};
 	constructor(props) {
 		super(props);
@@ -27,14 +37,24 @@ class SharePlaceScreen extends Component {
 		this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent);
 	}
 	placeNameChangedHandler = val => {
-		this.setState({
-			placeName: val
+		this.setState(prevState => {
+			return {
+				controls: {
+					...prevState.controls,
+					placeName: {
+						...prevState.controls.placeName,
+						value: val,
+						valid: validate(val, prevState.controls.placeName.validationRules),
+						touched: true
+					}
+				}
+			};
 		});
 	};
 
 	placeSubmitHandler = () => {
-		if (this.state.placeName.trim() !== "") {
-			this.props.onAddPlace(this.state.placeName);
+		if (this.state.controls.placeName.value.trim() !== "") {
+			this.props.onAddPlace(this.state.controls.placeName.value);
 		}
 	};
 
@@ -63,13 +83,14 @@ class SharePlaceScreen extends Component {
 					<ImageSelector />
 					<LocationSelector />
 					<InputBox
-						placeName={this.state.placeName}
+						placeData={this.state.controls.placeName}
 						updateInput={this.placeNameChangedHandler}
 					/>
 					<View style={styles.button}>
 						<Button
 							title="Share the Place!"
 							onPress={this.placeSubmitHandler}
+							disabled={!this.state.controls.placeName.valid}
 						/>
 					</View>
 				</View>
