@@ -18,7 +18,32 @@ class AuthScreen extends Component {
 	//need state because want state to listen for dimension changes
 	//and for UI to update once dimension changes
 	state = {
-		viewMode: Dimensions.get("window").height > 500 ? "portrait" : "landscape"
+		viewMode: Dimensions.get("window").height > 500 ? "portrait" : "landscape",
+		//keep controls in this component vs. redux
+		//because state is internal to this component
+		controls: {
+			email: {
+				value: "",
+				valid: false,
+				validationRules: {
+					isEmail: true
+				}
+			},
+			password: {
+				value: "",
+				valid: false,
+				validationRules: {
+					minLength: 6
+				}
+			},
+			confirmPassword: {
+				value: "",
+				valid: false,
+				validationRules: {
+					equalTo: "password"
+				}
+			}
+		}
 	};
 
 	constructor(props) {
@@ -40,6 +65,20 @@ class AuthScreen extends Component {
 		startMainTabs();
 	};
 
+	updateInputState = (key, value) => {
+		this.setState(prevState => {
+			return {
+				controls: {
+					...prevState.controls,
+					[key]: {
+						//dynamic access of key
+						...prevState.controls[key],
+						value: value //only override one specific value
+					}
+				}
+			};
+		});
+	};
 	render() {
 		let headingText = null;
 		//only show heading text if have lots of vert space
@@ -61,6 +100,8 @@ class AuthScreen extends Component {
 						<DefaultInput
 							placeholder="Your Email Address"
 							style={styles.input}
+							value={this.state.controls.email.value}
+							onChangeText={val => this.updateInputState("email", val)}
 						/>
 						<View
 							style={
@@ -76,7 +117,12 @@ class AuthScreen extends Component {
 										: styles.landscapePasswordWrapper
 								}
 							>
-								<DefaultInput placeholder="Password" style={styles.input} />
+								<DefaultInput
+									placeholder="Password"
+									style={styles.input}
+									value={this.state.controls.password.value}
+									onChangeText={val => this.updateInputState("password", val)}
+								/>
 							</View>
 							<View
 								style={
@@ -88,6 +134,10 @@ class AuthScreen extends Component {
 								<DefaultInput
 									placeholder="Confirm Password"
 									style={styles.input}
+									value={this.state.controls.confirmPassword.value}
+									onChangeText={val =>
+										this.updateInputState("confirmPassword", val)
+									}
 								/>
 							</View>
 						</View>
