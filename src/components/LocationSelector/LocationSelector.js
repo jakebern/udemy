@@ -32,6 +32,11 @@ class locationSelector extends Component {
 				locationChosen: true
 			};
 		});
+		//pass in js object of form {lat, long}
+		this.props.onLocationPicked({
+			latitude: coords.latitude,
+			longitude: coords.longitude
+		});
 	};
 
 	getLocationHandler = () => {

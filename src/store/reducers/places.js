@@ -16,7 +16,8 @@ const reducer = (state = initialState, action) => {
 					image: {
 						uri:
 							"https://b.fssta.com/uploads/content/dam/fsdigital/fscom/global/dev/static_resources/cbk/teams/retina/536.vresize.200.200.medium.0.png"
-					}
+					},
+					location: action.location
 				})
 			};
 
