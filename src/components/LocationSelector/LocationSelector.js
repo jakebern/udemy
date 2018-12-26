@@ -1,15 +1,35 @@
-import React from "react";
-import { View, Button, StyleSheet, Text } from "react-native";
-const locationSelector = () => (
-	<View style={styles.container}>
-		<View style={styles.placeholder}>
-			<Text>Map</Text>
-		</View>
-		<View style={styles.button}>
-			<Button title="Pick Image" onPress={() => alert("Pick Location!")} />
-		</View>
-	</View>
-);
+import React, { Component } from "react";
+import { View, Button, StyleSheet, Text, Dimensions } from "react-native";
+import MapView from "react-native-maps";
+
+class locationSelector extends Component {
+	state = {
+		focusedLocation: {
+			latitude: 38.6226188,
+			longitude: -90.1928209,
+			latitudeDelta: 0.0122,
+			longitudeDelta:
+				(Dimensions.get("window").width / Dimensions.get("window").height) *
+				0.0122
+		}
+	};
+	render() {
+		return (
+			<View style={styles.container}>
+				<MapView
+					style={styles.map}
+					initialRegion={this.state.focusedLocation}
+				/>
+				<View style={styles.button}>
+					<Button
+						title="Pick Location"
+						onPress={() => alert("Pick Location!")}
+					/>
+				</View>
+			</View>
+		);
+	}
+}
 
 const styles = StyleSheet.create({
 	//need this because add a subview.
@@ -18,13 +38,9 @@ const styles = StyleSheet.create({
 		width: "100%",
 		alignItems: "center"
 	},
-	placeholder: {
-		borderWidth: 1,
-		borderColor: "black",
-		backgroundColor: "#eee",
-		width: "80%",
-		height: 150,
-		flex: 1
+	map: {
+		width: "100%",
+		height: 250
 	},
 	button: {
 		margin: 8
