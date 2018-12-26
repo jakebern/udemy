@@ -17,6 +17,11 @@ class locationSelector extends Component {
 
 	pickLocationHandler = event => {
 		const coords = event.nativeEvent.coordinate;
+		this.map.animateToRegion({
+			...this.state.focusedLocation,
+			latitude: coords.latitude,
+			longitude: coords.longitude
+		});
 		this.setState(prevState => {
 			return {
 				focusedLocation: {
@@ -29,6 +34,28 @@ class locationSelector extends Component {
 		});
 	};
 
+	getLocationHandler = () => {
+		navigator.geolocation.getCurrentPosition(
+			pos => {
+				//just setting it up this hacky way
+				//so can re-use pickLocation Handler
+				const coordsEvent = {
+					nativeEvent: {
+						coordinate: {
+							latitude: pos.coords.latitude,
+							longitude: pos.coords.longitude
+						}
+					}
+				};
+				this.pickLocationHandler(coordsEvent);
+			},
+			err => {
+				console.log(err);
+				alert("Fetching the position failed, please pick one manually.");
+			}
+		);
+	};
+
 	render() {
 		let marker = null;
 		if (this.state.locationChosen) {
@@ -39,16 +66,21 @@ class locationSelector extends Component {
 				<MapView
 					style={styles.map}
 					initialRegion={this.state.focusedLocation}
-					region={this.state.focusedLocation}
+					//don't need to hard code current region in,
+					//because animate to it in pick location handler
 					onPress={this.pickLocationHandler}
+					//to animate, need to get reference to this MapView object
+					//to use in JS code. to get reference, use "ref" feature
+
+					//binds property of class to reference
+					//takes in argument (reference), sets this.map to reference
+					//can use this.map outside of this area
+					ref={reference => (this.map = reference)}
 				>
 					{marker}
 				</MapView>
 				<View style={styles.button}>
-					<Button
-						title="Pick Location"
-						onPress={() => alert("Pick Location!")}
-					/>
+					<Button title="Pick Location" onPress={this.getLocationHandler} />
 				</View>
 			</View>
 		);
