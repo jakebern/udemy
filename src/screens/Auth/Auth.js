@@ -13,6 +13,7 @@ import HeadingText from "../../components/UI/HeadingText/HeadingText";
 import MainText from "../../components/UI/MainText/MainText";
 import ButtonWithBackground from "../../components/UI/ButtonWithBackground/ButtonWithBackground";
 import backgroundImage from "../../assets/backgroundpic.jpg";
+import validate from "../../utility/validation";
 
 class AuthScreen extends Component {
 	//need state because want state to listen for dimension changes
@@ -67,13 +68,51 @@ class AuthScreen extends Component {
 
 	updateInputState = (key, value) => {
 		this.setState(prevState => {
+			let connectedValue = {};
+
+			//if the equalTo rule exists
+			if (this.state.controls[key].validationRules.equalTo) {
+				//in our case, equalControl = password
+				const equalControl = this.state.controls[key].validationRules.equalTo;
+				const equalValue = this.state.controls[equalControl].value;
+				connectedValue = {
+					...connectedValue,
+					equalTo: equalValue
+				};
+			}
+			if (key === "password") {
+				connectedValue = {
+					...connectedValue,
+					equalTo: value
+				};
+			}
+
 			return {
 				controls: {
 					...prevState.controls,
+
+					//need to check confirmPassword is correct
+					//when Password updates as well
+					confirmPassword: {
+						...prevState.controls.confirmPassword,
+						valid:
+							key === "password"
+								? validate(
+										prevState.controls.confirmPassword.value,
+										prevState.controls.confirmPassword.validationRules,
+										connectedValue
+								  )
+								: prevState.controls.confirmPassword.valid
+					},
 					[key]: {
 						//dynamic access of key
 						...prevState.controls[key],
-						value: value //only override one specific value
+						value: value,
+						valid: validate(
+							value,
+							prevState.controls[key].validationRules,
+							connectedValue
+						)
 					}
 				}
 			};
