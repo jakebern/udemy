@@ -1,5 +1,12 @@
 import React, { Component } from "react";
-import { View, Text, Button, StyleSheet, ScrollView } from "react-native";
+import {
+	View,
+	Text,
+	Button,
+	StyleSheet,
+	ScrollView,
+	KeyboardAvoidingView
+} from "react-native";
 import { connect } from "react-redux";
 import { addPlace } from "../../store/actions/index";
 import InputBox from "../../components/InputBox/InputBox";
@@ -75,26 +82,28 @@ class SharePlaceScreen extends Component {
 	};
 	render() {
 		return (
-			<ScrollView>
-				<View style={styles.container}>
-					<MainText>
-						<HeadingText>Share a place with us!</HeadingText>
-					</MainText>
-					<ImageSelector />
-					<LocationSelector />
-					<InputBox
-						placeData={this.state.controls.placeName}
-						updateInput={this.placeNameChangedHandler}
-					/>
-					<View style={styles.button}>
-						<Button
-							title="Share the Place!"
-							onPress={this.placeSubmitHandler}
-							disabled={!this.state.controls.placeName.valid}
+			<KeyboardAvoidingView behavior={"position"} style={{ flex: 1 }}>
+				<ScrollView>
+					<View style={styles.container}>
+						<MainText>
+							<HeadingText>Share a place with us!</HeadingText>
+						</MainText>
+						<ImageSelector />
+						<LocationSelector />
+						<InputBox
+							placeData={this.state.controls.placeName}
+							updateInput={this.placeNameChangedHandler}
 						/>
+						<View style={styles.button}>
+							<Button
+								title="Share the Place!"
+								onPress={this.placeSubmitHandler}
+								disabled={!this.state.controls.placeName.valid}
+							/>
+						</View>
 					</View>
-				</View>
-			</ScrollView>
+				</ScrollView>
+			</KeyboardAvoidingView>
 		);
 	}
 }
