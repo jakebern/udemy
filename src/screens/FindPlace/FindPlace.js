@@ -1,11 +1,19 @@
 import React, { Component } from "react";
-import { View } from "react-native";
+import { View, TouchableOpacity, StyleSheet, Text } from "react-native";
 
 import { connect } from "react-redux";
 
 import ListContainer from "../../components/ListContainer/ListContainer";
 
 class FindPlaceScreen extends Component {
+	static navigatorStyle = {
+		navBarButtonColor: "purple"
+	};
+
+	state = {
+		placesLoaded: false
+	};
+
 	constructor(props) {
 		super(props);
 
@@ -31,6 +39,13 @@ class FindPlaceScreen extends Component {
 		}
 	};
 
+	placesSearchHandler = () => {
+		//start animation, switch places placedLoaded to false
+		this.setState({
+			placesLoaded: true
+		});
+	};
+
 	itemSelectedHandler = key => {
 		const selPlace = this.props.places.find(place => {
 			return place.key === key;
@@ -45,16 +60,47 @@ class FindPlaceScreen extends Component {
 	};
 
 	render() {
-		return (
-			<View>
+		let content = (
+			<TouchableOpacity onPress={this.placesSearchHandler}>
+				<View style={styles.searchButton}>
+					<Text style={styles.searchButtonText}>Find Places</Text>
+				</View>
+			</TouchableOpacity>
+		);
+		if (this.state.placesLoaded) {
+			content = (
 				<ListContainer
 					places={this.props.places}
 					onItemSelected={this.itemSelectedHandler}
 				/>
+			);
+		}
+		return (
+			<View style={this.state.placesLoaded ? null : styles.buttonContainer}>
+				{content}
 			</View>
 		);
 	}
 }
+
+const styles = StyleSheet.create({
+	buttonContainer: {
+		flex: 1,
+		justifyContent: "center", //vertical center of page
+		alignItems: "center" //horizontal center of page
+	},
+	searchButton: {
+		borderColor: "red",
+		borderWidth: 3,
+		borderRadius: 50,
+		padding: 20
+	},
+	searchButtonText: {
+		color: "red",
+		fontWeight: "bold",
+		fontSize: 26
+	}
+});
 
 //receives state, maps to props of components
 //get them from global state, which is accessible
