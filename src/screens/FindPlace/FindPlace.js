@@ -1,5 +1,11 @@
 import React, { Component } from "react";
-import { View, TouchableOpacity, StyleSheet, Text } from "react-native";
+import {
+	View,
+	TouchableOpacity,
+	StyleSheet,
+	Text,
+	Animated
+} from "react-native";
 
 import { connect } from "react-redux";
 
@@ -11,7 +17,9 @@ class FindPlaceScreen extends Component {
 	};
 
 	state = {
-		placesLoaded: false
+		placesLoaded: false,
+		removeAnim: new Animated.Value(1), //when remove button
+		listIn: new Animated.Value(0) //when add list
 	};
 
 	constructor(props) {
@@ -41,9 +49,29 @@ class FindPlaceScreen extends Component {
 
 	placesSearchHandler = () => {
 		//start animation, switch places placedLoaded to false
-		this.setState({
-			placesLoaded: true
+		//param 1: value React should change (can safely pass state)
+		//param 2: function which you should animate to
+		Animated.timing(this.state.removeAnim, {
+			toValue: 0, //started at value 1, move to 1
+			duration: 500,
+			useNativeDriver: true
+		}).start(() => {
+			//will call this when animation is done
+			this.setState({
+				placesLoaded: true
+			});
+			this.placesLoadedHandler();
 		});
+	};
+
+	//start animation that fades in list
+	//value 0 to opacity 1
+	placesLoadedHandler = () => {
+		Animated.timing(this.state.listIn, {
+			toValue: 1,
+			duration: 500,
+			useNativeDriver: true
+		}).start(); //need to call start
 	};
 
 	itemSelectedHandler = key => {
@@ -61,18 +89,42 @@ class FindPlaceScreen extends Component {
 
 	render() {
 		let content = (
-			<TouchableOpacity onPress={this.placesSearchHandler}>
-				<View style={styles.searchButton}>
-					<Text style={styles.searchButtonText}>Find Places</Text>
-				</View>
-			</TouchableOpacity>
+			<Animated.View
+				style={{
+					//JS object
+					opacity: this.state.removeAnim, //reduces opacity
+					transform: [
+						//make bigger on press
+						{
+							//if scale is this.state.removeAnim, button would become smaller
+							scale: this.state.removeAnim.interpolate({
+								inputRange: [0, 1], //0 -> 1 was given input range
+								outputRange: [12, 1] //when animation is 0 -> make button size 12
+								//when animation is 1 (on start, size should be 1)
+							})
+						}
+					]
+				}}
+			>
+				<TouchableOpacity onPress={this.placesSearchHandler}>
+					<View style={styles.searchButton}>
+						<Text style={styles.searchButtonText}>Find Places</Text>
+					</View>
+				</TouchableOpacity>
+			</Animated.View>
 		);
 		if (this.state.placesLoaded) {
 			content = (
-				<ListContainer
-					places={this.props.places}
-					onItemSelected={this.itemSelectedHandler}
-				/>
+				<Animated.View
+					style={{
+						opacity: this.state.listIn
+					}}
+				>
+					<ListContainer
+						places={this.props.places}
+						onItemSelected={this.itemSelectedHandler}
+					/>
+				</Animated.View>
 			);
 		}
 		return (
