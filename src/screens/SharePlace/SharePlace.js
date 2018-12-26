@@ -9,6 +9,10 @@ import LocationSelector from "../../components/LocationSelector/LocationSelector
 import HeadingText from "../../components/UI/HeadingText/HeadingText";
 
 class SharePlaceScreen extends Component {
+	static navigatorStyle = {
+		navBarButtonColor: "purple"
+	};
+
 	//can either set in constructor as
 	//this.state or not.
 	state = {

@@ -49,6 +49,15 @@ const startTabs = () => {
 					}
 				}
 			],
+			//iOS button
+			tabsStyle: {
+				tabBarSelectedButtonColor: "purple"
+			},
+
+			//buttons for Android
+			appStyle: {
+				tabBarSelectedButtonColor: "purple"
+			},
 			//but need to add drawer button to each screen
 			drawer: {
 				left: {

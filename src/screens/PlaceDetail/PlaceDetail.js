@@ -14,6 +14,9 @@ import { deletePlace } from "../../store/actions/index";
 
 class placeDetail extends Component {
 	//just good for the initial state
+	static navigatorStyle = {
+		navBarButtonColor: "purple"
+	};
 	state = {
 		viewMode: Dimensions.get("window").height > 500 ? "portrait" : "landscape"
 	};
