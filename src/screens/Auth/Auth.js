@@ -31,7 +31,7 @@ class AuthScreen extends Component {
 		controls: {
 			email: {
 				value: "",
-				valid: false,
+				valid: true, //false,
 				validationRules: {
 					isEmail: true
 				},
@@ -39,7 +39,7 @@ class AuthScreen extends Component {
 			},
 			password: {
 				value: "",
-				valid: false,
+				valid: true, //false,
 				validationRules: {
 					minLength: 6
 				},

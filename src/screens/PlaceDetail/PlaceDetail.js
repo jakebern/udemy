@@ -11,6 +11,7 @@ import {
 import Icon from "react-native-vector-icons/Ionicons";
 import { connect } from "react-redux";
 import { deletePlace } from "../../store/actions/index";
+import MapView from "react-native-maps";
 
 class placeDetail extends Component {
 	//just good for the initial state
@@ -43,6 +44,7 @@ class placeDetail extends Component {
 	};
 
 	render() {
+		console.log(this.props.selectedPlace);
 		return (
 			<View
 				style={[
@@ -56,14 +58,30 @@ class placeDetail extends Component {
 		 because in Lanscape want 2 column view
 		 with image on left, text/button on right*/}
 
-				{/*need subcontainer to set equal priority 
-	to each subcontainer so that way each takes 50% of 
-horizontal space*/}
 				<View style={styles.subContainer}>
 					<Image
 						style={styles.placeImage}
 						source={this.props.selectedPlace.image}
 					/>
+				</View>
+
+				<View style={styles.subContainer}>
+					<MapView
+						style={styles.map}
+						region={{
+							latitude: this.props.selectedPlace.location.value.latitude,
+							longitude: this.props.selectedPlace.location.value.longitude,
+							latitudeDelta: 0.0122,
+							longitudeDelta:
+								(Dimensions.get("window").width /
+									Dimensions.get("window").height) *
+								0.0122
+						}}
+					>
+						<MapView.Marker
+							coordinate={this.props.selectedPlace.location.value}
+						/>
+					</MapView>
 				</View>
 
 				<View style={styles.subContainer}>
@@ -96,17 +114,19 @@ const styles = StyleSheet.create({
 		margin: 50
 	},
 	subContainer: {
-		flex: 1
+		flex: 1,
+		justifyContent: "center"
 	},
 	portraitContainer: {
-		flexDirection: "column"
+		flexDirection: "column",
+		justifyContent: "space-evenly"
 	},
 	landscapeContainer: {
 		flexDirection: "row"
 	},
 	placeImage: {
-		width: "100%",
-		height: 200
+		height: 140,
+		width: "100%"
 	},
 	placeName: {
 		fontWeight: "bold",
@@ -115,6 +135,10 @@ const styles = StyleSheet.create({
 	},
 	deleteButton: {
 		alignItems: "center"
+	},
+	map: {
+		width: "100%",
+		height: 140
 	}
 });
 

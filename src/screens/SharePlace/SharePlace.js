@@ -26,13 +26,17 @@ class SharePlaceScreen extends Component {
 	state = {
 		controls: {
 			placeName: {
-				value: "",
-				valid: false,
+				value: "", // "test", //"",
+				valid: false, //true, //false,
 				touched: false,
 				validationRules: {
 					notEmpty: true //value here doesn't matter
 				},
 				location: {
+					// value: {
+					// 	latitude: 38.6226188,
+					// 	longitude: -90.1928209
+					// },
 					value: null,
 					valid: false
 				}
@@ -66,7 +70,7 @@ class SharePlaceScreen extends Component {
 	placeSubmitHandler = () => {
 		this.props.onAddPlace(
 			this.state.controls.placeName.value,
-			this.state.controls.location
+			this.state.controls.placeName.location
 		);
 	};
 
@@ -75,9 +79,12 @@ class SharePlaceScreen extends Component {
 			return {
 				controls: {
 					...prevState.controls,
-					location: {
-						value: location,
-						valid: true //as soon as location received, set to true
+					placeName: {
+						...prevState.controls.placeName,
+						location: {
+							value: location,
+							valid: true //as soon as location received, set to true
+						}
 					}
 				}
 			};
@@ -119,7 +126,7 @@ class SharePlaceScreen extends Component {
 								onPress={this.placeSubmitHandler}
 								disabled={
 									!this.state.controls.placeName.valid ||
-									!this.state.controls.location.valid
+									!this.state.controls.placeName.location.valid
 								}
 							/>
 						</View>
