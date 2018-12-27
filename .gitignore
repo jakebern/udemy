@@ -2,6 +2,9 @@
 #
 .DS_Store
 
+#Passwords
+functions/udemy-react.json
+
 # Xcode
 #
 build/
