@@ -70,7 +70,7 @@ class SharePlaceScreen extends Component {
 	placeSubmitHandler = () => {
 		this.props.onAddPlace(
 			this.state.controls.placeName.value,
-			this.state.controls.placeName.location
+			this.state.controls.placeName.location.value
 		);
 	};
 

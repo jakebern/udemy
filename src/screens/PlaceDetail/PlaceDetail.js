@@ -68,9 +68,8 @@ class placeDetail extends Component {
 				<View style={styles.subContainer}>
 					<MapView
 						style={styles.map}
-						region={{
-							latitude: this.props.selectedPlace.location.value.latitude,
-							longitude: this.props.selectedPlace.location.value.longitude,
+						initialRegion={{
+							...this.props.selectedPlace.location,
 							latitudeDelta: 0.0122,
 							longitudeDelta:
 								(Dimensions.get("window").width /
@@ -78,9 +77,7 @@ class placeDetail extends Component {
 								0.0122
 						}}
 					>
-						<MapView.Marker
-							coordinate={this.props.selectedPlace.location.value}
-						/>
+						<MapView.Marker coordinate={this.props.selectedPlace.location} />
 					</MapView>
 				</View>
 
@@ -111,21 +108,19 @@ class placeDetail extends Component {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		margin: 50
+		margin: 30
 	},
 	subContainer: {
-		flex: 1,
-		justifyContent: "center"
+		flex: 1
 	},
 	portraitContainer: {
-		flexDirection: "column",
-		justifyContent: "space-evenly"
+		flexDirection: "column"
 	},
 	landscapeContainer: {
 		flexDirection: "row"
 	},
 	placeImage: {
-		height: 140,
+		height: 200,
 		width: "100%"
 	},
 	placeName: {
@@ -137,8 +132,7 @@ const styles = StyleSheet.create({
 		alignItems: "center"
 	},
 	map: {
-		width: "100%",
-		height: 140
+		...StyleSheet.absoluteFillObject
 	}
 });
 
