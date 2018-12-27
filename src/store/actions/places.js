@@ -1,8 +1,9 @@
-import { SET_PLACES } from "./actionTypes";
+import { SET_PLACES, REMOVE_PLACE } from "./actionTypes";
 import { uiStartLoading, uiStopLoading } from "./index";
 
 //if we ever return a function instead of an object
-//will send through redux-thunk
+//will send through redux-thunk.  If so, don't need to use
+//reducer and will use async code.
 export const addPlace = (placeName, location, image) => {
 	return dispatch => {
 		dispatch(uiStartLoading());
@@ -78,8 +79,27 @@ export const getPlaces = () => {
 };
 
 export const deletePlace = key => {
+	return dispatch => {
+		dispatch(removePlace(key)); //but if removing on server falls, will have out of sync front end
+		fetch("https://udemy-react-9ce28.firebaseio.com/places/" + key + ".json", {
+			method: "DELETE"
+		})
+			.catch(err => {
+				//if delete fails, should re-add the place in case in failed
+				//option 1: in reducer, hold deleted places array
+				//option 2: create temp copy of deleted place
+				alert("Something went wrong, sorry!");
+				console.log(err);
+			})
+			.then(res => res.json())
+			.then(parsedRes => console.log("done"));
+	};
+};
+
+//non async, do immediately
+export const removePlace = key => {
 	return {
-		type: DELETE_PLACE,
-		placeKey: key
+		type: REMOVE_PLACE,
+		key: key
 	};
 };
