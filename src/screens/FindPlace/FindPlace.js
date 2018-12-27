@@ -8,8 +8,8 @@ import {
 } from "react-native";
 
 import { connect } from "react-redux";
-
 import ListContainer from "../../components/ListContainer/ListContainer";
+import { getPlaces } from "../../store/actions/index";
 
 class FindPlaceScreen extends Component {
 	static navigatorStyle = {
@@ -29,6 +29,10 @@ class FindPlaceScreen extends Component {
 		//execute this whenever navigation event occurs
 		//since have arrow function, don't need to bind (eg. this.onNavigatorEvent.bind(this))
 		this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent);
+	}
+
+	componentDidMount() {
+		this.props.onLoadPlaces();
 	}
 
 	onNavigatorEvent = event => {
@@ -163,6 +167,15 @@ const mapStateToProps = state => {
 	};
 };
 
+const mapDispatchToProps = dispatch => {
+	return {
+		onLoadPlaces: () => dispatch(getPlaces())
+	};
+};
+
 //by running this, get props from redux
 //this fills this.props.places
-export default connect(mapStateToProps)(FindPlaceScreen);
+export default connect(
+	mapStateToProps,
+	mapDispatchToProps
+)(FindPlaceScreen);

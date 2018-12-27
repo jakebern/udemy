@@ -1,4 +1,4 @@
-import { ADD_PLACE, DELETE_PLACE } from "./actionTypes";
+import { SET_PLACES } from "./actionTypes";
 import { uiStartLoading, uiStopLoading } from "./index";
 
 //if we ever return a function instead of an object
@@ -17,8 +17,8 @@ export const addPlace = (placeName, location, image) => {
 		)
 			.catch(err => {
 				console.log(err);
-				dispatch(uiStopLoading());
 				alert("Something went wrong, please try again!");
+				dispatch(uiStopLoading());
 			})
 			.then(res => res.json())
 			.then(parsedRes => {
@@ -33,6 +33,7 @@ export const addPlace = (placeName, location, image) => {
 				})
 					.catch(err => {
 						console.log(err);
+						alert("Something went wrong, please try again!");
 						dispatch(uiStopLoading());
 					})
 					.then(res => res.json())
@@ -41,16 +42,38 @@ export const addPlace = (placeName, location, image) => {
 						dispatch(uiStopLoading());
 					});
 			});
-		//dispatch is an argument which is a function
-		// fetch("https://udemy-react-9ce28.firebaseio.com/places.json", {
-		// 	method: "POST",
-		// 	body: JSON.stringify(placeData)
-		// })
-		// 	.catch(err => console.log(err))
-		// 	.then(res => res.json())
-		// 	.then(parsedRes => {
-		// 		console.log(parsedRes);
-		// 	});
+	};
+};
+
+export const setPlaces = places => {
+	return {
+		type: SET_PLACES,
+		places: places
+	};
+};
+//since is async, want to return function (dispatch)
+//and redux thunk will help
+export const getPlaces = () => {
+	return dispatch => {
+		fetch("https://udemy-react-9ce28.firebaseio.com/places.json")
+			.catch(err => {
+				console.log(err);
+				alert("Something went wrong!");
+			})
+			.then(res => res.json())
+			.then(parsedRes => {
+				const places = [];
+				for (let key in parsedRes) {
+					places.push({
+						...parsedRes[key],
+						image: {
+							uri: parsedRes[key].image
+						},
+						id: key //need to store in order to delete this later
+					});
+				}
+				dispatch(setPlaces(places));
+			});
 	};
 };
 
