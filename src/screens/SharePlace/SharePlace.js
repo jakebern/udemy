@@ -5,7 +5,8 @@ import {
 	Button,
 	StyleSheet,
 	ScrollView,
-	KeyboardAvoidingView
+	KeyboardAvoidingView,
+	ActivityIndicator
 } from "react-native";
 import { connect } from "react-redux";
 import { addPlace } from "../../store/actions/index";
@@ -124,6 +125,22 @@ class SharePlaceScreen extends Component {
 		}
 	};
 	render() {
+		let submitButton = (
+			<Button
+				title="Share the Place!"
+				onPress={this.placeSubmitHandler}
+				disabled={
+					!this.state.controls.placeName.valid ||
+					!this.state.controls.location.valid ||
+					!this.state.controls.image.valid
+				}
+			/>
+		);
+
+		if (this.props.isLoading) {
+			submitButton = <ActivityIndicator />;
+		}
+
 		return (
 			<KeyboardAvoidingView behavior={"position"} style={{ flex: 1 }}>
 				<ScrollView>
@@ -137,17 +154,7 @@ class SharePlaceScreen extends Component {
 							placeData={this.state.controls.placeName}
 							updateInput={this.placeNameChangedHandler}
 						/>
-						<View style={styles.button}>
-							<Button
-								title="Share the Place!"
-								onPress={this.placeSubmitHandler}
-								disabled={
-									!this.state.controls.placeName.valid ||
-									!this.state.controls.location.valid ||
-									!this.state.controls.image.valid
-								}
-							/>
-						</View>
+						<View style={styles.button}>{submitButton}</View>
 					</View>
 				</ScrollView>
 			</KeyboardAvoidingView>
@@ -176,6 +183,12 @@ const styles = StyleSheet.create({
 	}
 });
 
+//need this to access global state
+const mapStateToProps = state => {
+	return {
+		isLoading: state.ui.isLoading
+	};
+};
 //receives dispatch function as argument
 //returns things can use as props in component
 const mapDispatchToProps = dispatch => {
@@ -195,6 +208,6 @@ const mapDispatchToProps = dispatch => {
 //where reducer performs opps
 
 export default connect(
-	null,
+	mapStateToProps,
 	mapDispatchToProps
 )(SharePlaceScreen);
