@@ -58,27 +58,29 @@ class placeDetail extends Component {
 		 because in Lanscape want 2 column view
 		 with image on left, text/button on right*/}
 
-				<View style={styles.subContainer}>
-					<Image
-						style={styles.placeImage}
-						source={this.props.selectedPlace.image}
-					/>
-				</View>
+				<View style={styles.placeDetailContainer}>
+					<View style={styles.subContainer}>
+						<Image
+							style={styles.placeImage}
+							source={this.props.selectedPlace.image}
+						/>
+					</View>
 
-				<View style={styles.subContainer}>
-					<MapView
-						style={styles.map}
-						initialRegion={{
-							...this.props.selectedPlace.location,
-							latitudeDelta: 0.0122,
-							longitudeDelta:
-								(Dimensions.get("window").width /
-									Dimensions.get("window").height) *
-								0.0122
-						}}
-					>
-						<MapView.Marker coordinate={this.props.selectedPlace.location} />
-					</MapView>
+					<View style={styles.subContainer}>
+						<MapView
+							style={styles.map}
+							initialRegion={{
+								...this.props.selectedPlace.location,
+								latitudeDelta: 0.0122,
+								longitudeDelta:
+									(Dimensions.get("window").width /
+										Dimensions.get("window").height) *
+									0.0122
+							}}
+						>
+							<MapView.Marker coordinate={this.props.selectedPlace.location} />
+						</MapView>
+					</View>
 				</View>
 
 				<View style={styles.subContainer}>
@@ -113,6 +115,9 @@ const styles = StyleSheet.create({
 	subContainer: {
 		flex: 1
 	},
+	placeDetailContainer: {
+		flex: 2 //if flex is 1, then placeDetailContainer width = text / delete button subcontainer width
+	},
 	portraitContainer: {
 		flexDirection: "column"
 	},
@@ -120,7 +125,7 @@ const styles = StyleSheet.create({
 		flexDirection: "row"
 	},
 	placeImage: {
-		height: 200,
+		height: "100%", //may underlap map if set static
 		width: "100%"
 	},
 	placeName: {
