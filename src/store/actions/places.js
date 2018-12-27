@@ -19,7 +19,6 @@ export const addPlace = (placeName, location, image) => {
 				console.log(err);
 				dispatch(uiStopLoading());
 				alert("Something went wrong, please try again!");
-				return;
 			})
 			.then(res => res.json())
 			.then(parsedRes => {
@@ -28,15 +27,13 @@ export const addPlace = (placeName, location, image) => {
 					location: location,
 					image: parsedRes.imageUrl
 				};
-
-				fetch("https://udemy-react-9ce28.firebaseio.com/places.json", {
+				return fetch("https://udemy-react-9ce28.firebaseio.com/places.json", {
 					method: "POST",
 					body: JSON.stringify(placeData)
 				})
 					.catch(err => {
 						console.log(err);
 						dispatch(uiStopLoading());
-						return;
 					})
 					.then(res => res.json())
 					.then(parsedRes => {
