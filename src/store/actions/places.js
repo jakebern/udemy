@@ -69,7 +69,7 @@ export const getPlaces = () => {
 						image: {
 							uri: parsedRes[key].image
 						},
-						id: key //need to store in order to delete this later
+						key: key //need to store in order to delete this later
 					});
 				}
 				dispatch(setPlaces(places));
