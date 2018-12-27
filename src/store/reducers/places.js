@@ -14,8 +14,7 @@ const reducer = (state = initialState, action) => {
 					key: Math.random().toString(),
 					name: action.placeName,
 					image: {
-						uri:
-							"https://b.fssta.com/uploads/content/dam/fsdigital/fscom/global/dev/static_resources/cbk/teams/retina/536.vresize.200.200.medium.0.png"
+						uri: action.image.uri
 					},
 					location: action.location
 				})
