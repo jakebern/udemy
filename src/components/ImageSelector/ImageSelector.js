@@ -10,20 +10,23 @@ class imageSelector extends Component {
 	pickImageHandler = () => {
 		//two args - title for page, response
 		//can set noData if not using Base64
-		ImagePicker.showImagePicker({ title: "Pick an Image" }, res => {
-			if (res.didCancel) {
-				console.log("User canceled!");
-			} else if (res.error) {
-				console.log("Error");
-			} else {
-				this.setState({
-					pickedImage: {
-						uri: res.uri
-					}
-				});
-				this.props.onImagePicked({ uri: res.uri, base64: res.data });
+		ImagePicker.showImagePicker(
+			{ title: "Pick an Image", maxWidth: 800, maxHeight: 600 },
+			res => {
+				if (res.didCancel) {
+					console.log("User canceled!");
+				} else if (res.error) {
+					console.log("Error");
+				} else {
+					this.setState({
+						pickedImage: {
+							uri: res.uri
+						}
+					});
+					this.props.onImagePicked({ uri: res.uri, base64: res.data });
+				}
 			}
-		});
+		);
 	};
 
 	render() {
