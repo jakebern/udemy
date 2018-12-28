@@ -55,3 +55,16 @@ export const setAuthToken = token => {
 		token: token
 	};
 };
+export const getAuthToken = () => {
+	return (dispatch, getState) => {
+		const promise = new Promise((resolve, reject) => {
+			const token = getState().auth.token;
+			if (!token) {
+				reject();
+			} else {
+				resolve(token);
+			}
+		});
+		return promise;
+	};
+};

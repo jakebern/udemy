@@ -1,5 +1,5 @@
 import { SET_PLACES, REMOVE_PLACE } from "./actionTypes";
-import { uiStartLoading, uiStopLoading } from "./index";
+import { uiStartLoading, uiStopLoading, getAuthToken } from "./index";
 
 //if we ever return a function instead of an object
 //will send through redux-thunk.  If so, don't need to use
@@ -7,15 +7,20 @@ import { uiStartLoading, uiStopLoading } from "./index";
 export const addPlace = (placeName, location, image) => {
 	return dispatch => {
 		dispatch(uiStartLoading());
-		fetch(
-			"https://us-central1-udemy-react-9ce28.cloudfunctions.net/storeImage",
-			{
-				method: "POST",
-				body: JSON.stringify({
-					image: image.base64
-				})
-			}
-		)
+		dispatch(getAuthToken())
+			.catch(() => alert("no valid token"))
+			.then(token => {
+				return fetch(
+					//need to write own logic for cloud functions auth
+					"https://us-central1-udemy-react-9ce28.cloudfunctions.net/storeImage",
+					{
+						method: "POST",
+						body: JSON.stringify({
+							image: image.base64
+						})
+					}
+				);
+			})
 			.catch(err => {
 				console.log("caught!");
 				console.log(err);
@@ -63,7 +68,13 @@ export const setPlaces = places => {
 //and redux thunk will help
 export const getPlaces = () => {
 	return dispatch => {
-		fetch("https://udemy-react-9ce28.firebaseio.com/places.json")
+		dispatch(getAuthToken())
+			.then(token => {
+				return fetch(
+					"https://udemy-react-9ce28.firebaseio.com/places.json?auth=" + token
+				);
+			})
+			.catch(() => alert("no valid token"))
 			.then(res => res.json())
 			.then(parsedRes => {
 				const places = [];
@@ -87,10 +98,20 @@ export const getPlaces = () => {
 
 export const deletePlace = key => {
 	return dispatch => {
-		dispatch(removePlace(key)); //but if removing on server falls, will have out of sync front end
-		fetch("https://udemy-react-9ce28.firebaseio.com/places/" + key + ".json", {
-			method: "DELETE"
-		})
+		dispatch(getAuthToken())
+			.catch(() => alert("no valid token"))
+			.then(token => {
+				dispatch(removePlace(key)); //but if removing on server falls, will have out of sync front end
+				return fetch(
+					"https://udemy-react-9ce28.firebaseio.com/places/" +
+						key +
+						".json?auth=" +
+						token,
+					{
+						method: "DELETE"
+					}
+				);
+			})
 			.then(res => res.json())
 			.then(parsedRes => console.log("done"))
 			.catch(err => {
