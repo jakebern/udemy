@@ -3,19 +3,19 @@ import { TRY_AUTH, AUTH_SET_TOKEN } from "./actionTypes";
 import { uiStartLoading, uiStopLoading } from "./index";
 import startMainTabs from "../../screens/MainTabs/startMainTabs";
 
+const API_KEY = "AIzaSyD4OKNEEQOk7hHzwevCaNrNLIBWcX12HUs";
 export const tryAuth = (authData, authMode) => {
 	return dispatch => {
-		const apiKey = "AIzaSyD4OKNEEQOk7hHzwevCaNrNLIBWcX12HUs";
 		dispatch(uiStartLoading());
 
 		//default URL to login
 		let url =
 			"https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=" +
-			apiKey;
+			API_KEY;
 		if (authMode === "signup") {
 			url =
 				"https://www.googleapis.com/identitytoolkit/v3/relyingparty/signupNewUser?key=" +
-				apiKey;
+				API_KEY;
 		}
 		fetch(url, {
 			method: "POST",
@@ -43,21 +43,28 @@ export const tryAuth = (authData, authMode) => {
 					console.log(parsedRes);
 					alert("There's an error, please try again");
 				} else {
-					dispatch(authStoreToken(parsedRes.idToken, parsedRes.expiresIn));
+					dispatch(
+						authStoreToken(
+							parsedRes.idToken,
+							parsedRes.expiresIn,
+							parsedRes.refreshToken
+						)
+					);
 					startMainTabs();
 				}
 			});
 	};
 };
 
-export const authStoreToken = (token, expiresIn) => {
+export const authStoreToken = (token, expiresIn, refreshToken) => {
 	return dispatch => {
 		//still want to store in redux
 		dispatch(setAuthToken(token));
 		const now = new Date();
-		const expiryDate = now.getTime() + expiresIn * 1000; //expiresIn is in s, getTime in ms
-		console.log(now, new Date(expiryDate));
+		const expiryDate = now.getTime() + 20 * 1000; //expiresIn is in s, getTime in ms
+		console.log(refreshToken);
 		AsyncStorage.setItem("ud:auth:token", token);
+		AsyncStorage.setItem("ud:auth:refreshToken", refreshToken);
 		AsyncStorage.setItem("ud:auth:expiryDate", expiryDate.toString());
 	};
 };
@@ -108,10 +115,49 @@ export const getAuthToken = () => {
 				resolve(token);
 			}
 		});
-		promise.catch(err => {
-			dispatch(authClearStorage());
-		});
-		return promise;
+		return (
+			promise
+				.catch(err => {
+					return AsyncStorage.getItem("ud:auth:refreshToken")
+						.then(refreshToken => {
+							return fetch(
+								"https://securetoken.googleapis.com/v1/token?key=" + API_KEY,
+								{
+									method: "POST",
+									body:
+										"grant_type=refresh_token&refresh_token=" + refreshToken,
+									headers: {
+										"Content-Type": "application/x-www-form-urlencoded"
+									}
+								}
+							);
+						})
+						.then(res => res.json())
+						.then(parsedRes => {
+							if (parsedRes.id_token) {
+								dispatch(
+									authStoreToken(
+										parsedRes.id_token,
+										parsedRes.expires_in,
+										parsedRes.refresh_token
+									)
+								);
+								return parsedRes.id_token;
+							} else {
+								dispatch(authClearStorage());
+							}
+						});
+				})
+				//this will always get called because above promise is returned (eg. a value is not returned, but a promise)
+				.then(token => {
+					if (!token) {
+						throw new Error();
+					} else {
+						//gets called every time!
+						return token;
+					}
+				})
+		);
 	};
 };
 
