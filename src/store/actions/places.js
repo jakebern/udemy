@@ -31,12 +31,17 @@ export const addPlace = (placeName, location, image) => {
 					}
 				);
 			})
+			//this catch only catches network errors
 			.catch(err => {
 				console.log(err);
 				alert("Something went wrong, please try again!");
 				dispatch(uiStopLoading());
 			})
-			.then(res => res.json())
+			//400 and 500 errors will be caught by res.ok check.
+			.then(res => {
+				if (res.ok) return res.json();
+				else throw new Error(); //will hit next catch block
+			})
 			.then(parsedRes => {
 				const placeData = {
 					name: placeName,
@@ -51,7 +56,10 @@ export const addPlace = (placeName, location, image) => {
 						body: JSON.stringify(placeData)
 					}
 				)
-					.then(res => res.json())
+					.then(res => {
+						if (res.ok) return res.json();
+						else throw new Error(); //will hit next catch block
+					})
 					.then(parsedRes => {
 						dispatch(uiStopLoading());
 						if (parsedRes.error) {
@@ -67,11 +75,6 @@ export const addPlace = (placeName, location, image) => {
 						alert("Something went wrong, please try again!");
 						dispatch(uiStopLoading());
 					});
-			})
-			.catch(err => {
-				dispatch(uiStopLoading());
-				console.log("you ran me!");
-				console.log(err);
 			});
 	};
 };
@@ -105,7 +108,10 @@ export const getPlaces = () => {
 				);
 			})
 			.catch(() => alert("no valid token"))
-			.then(res => res.json())
+			.then(res => {
+				if (res.ok) return res.json();
+				else throw new Error(); //will hit next catch block
+			})
 			.then(parsedRes => {
 				const places = [];
 				for (let key in parsedRes) {
@@ -142,7 +148,10 @@ export const deletePlace = key => {
 					}
 				);
 			})
-			.then(res => res.json())
+			.then(res => {
+				if (res.ok) return res.json();
+				else throw new Error(); //will hit next catch block
+			})
 			.then(parsedRes => console.log("done"))
 			.catch(err => {
 				//if delete fails, should re-add the place in case in failed
