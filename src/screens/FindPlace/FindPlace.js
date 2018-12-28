@@ -31,15 +31,16 @@ class FindPlaceScreen extends Component {
 		this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent);
 	}
 
-	componentDidMount() {
-		this.props.onLoadPlaces();
-	}
-
 	onNavigatorEvent = event => {
 		//willappear, didappear, etc
 		//these are independent of componentDidMount
 		//better to use these events because sometimes React Navigator
 		//will cache React Components
+		if (event.type === "ScreenChangedEvent") {
+			if (event.id === "willAppear") {
+				this.props.onLoadPlaces();
+			}
+		}
 		if (event.type === "NavBarButtonPress") {
 			if (event.id === "sideDrawerToggle") {
 				//works by default for iOS, not Android
