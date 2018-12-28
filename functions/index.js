@@ -68,7 +68,8 @@ exports.storeImage = functions.https.onRequest((request, response) => {
 									"/o/" +
 									encodeURIComponent(file.name) +
 									"?alt=media&token=" +
-									uuid
+									uuid,
+								imagePath: "/places/" + uuid + ".jpg"
 							});
 						} else {
 							console.log(err);
@@ -84,3 +85,15 @@ exports.storeImage = functions.https.onRequest((request, response) => {
 			});
 	});
 });
+
+//adds a listener for delete events.  When item is deleted, do X
+exports.deleteImage = functions.database
+	.ref("/places/{placeId}")
+	.onDelete(snapshot => {
+		const placeData = snapshot.val();
+		const imagePath = placeData.imageName;
+		const bucket = gcs.bucket("udemy-react-9ce28.appspot.com");
+		return bucket.file(imagePath).delete();
+		//returns a promise, but we don't care about promise.
+		//need to return to let FireBase know function is done.
+	});

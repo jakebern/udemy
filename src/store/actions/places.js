@@ -46,7 +46,8 @@ export const addPlace = (placeName, location, image) => {
 				const placeData = {
 					name: placeName,
 					location: location,
-					image: parsedRes.imageUrl
+					image: parsedRes.imageUrl,
+					imageName: parsedRes.imagePath //need in order to call deletes to Database
 				};
 				return fetch(
 					"https://udemy-react-9ce28.firebaseio.com/places.json?auth=" +
