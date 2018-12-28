@@ -53,27 +53,28 @@ export const tryAuth = (authData, authMode) => {
 					);
 					startMainTabs();
 				}
-			});
+			})
+			.catch(err => console.log(err));
 	};
 };
 
 export const authStoreToken = (token, expiresIn, refreshToken) => {
 	return dispatch => {
-		//still want to store in redux
-		dispatch(setAuthToken(token));
 		const now = new Date();
 		const expiryDate = now.getTime() + expiresIn * 1000; //expiresIn is in s, getTime in ms
-		console.log(refreshToken);
+		//still want to store in redux
+		dispatch(setAuthToken(token, expiryDate));
 		AsyncStorage.setItem("ud:auth:token", token);
 		AsyncStorage.setItem("ud:auth:refreshToken", refreshToken);
 		AsyncStorage.setItem("ud:auth:expiryDate", expiryDate.toString());
 	};
 };
 
-export const setAuthToken = token => {
+export const setAuthToken = (token, expiryDate) => {
 	return {
 		type: AUTH_SET_TOKEN,
-		token: token
+		token: token,
+		expiryDate: expiryDate
 	};
 };
 export const getAuthToken = () => {
@@ -81,7 +82,9 @@ export const getAuthToken = () => {
 		const promise = new Promise((resolve, reject) => {
 			//first look in redux store
 			const token = getState().auth.token;
-			if (!token) {
+			const expiryDate = getState().auth.expiryDate;
+			if (!token || new Date(expiryDate) <= new Date()) {
+				//but need to handle case expired
 				let fetchedToken;
 				AsyncStorage.getItem("ud:auth:token")
 					//request fails
@@ -103,7 +106,7 @@ export const getAuthToken = () => {
 						if (parsedExpiryDate > now) {
 							//if parsedExpiry date is null, will return false
 							//store in redux store and then resolve / send token back
-							dispatch(setAuthToken(fetchedToken));
+							dispatch(setAuthToken(fetchedToken, parsedExpiryDate));
 							resolve(fetchedToken);
 						} else {
 							reject();
@@ -135,6 +138,7 @@ export const getAuthToken = () => {
 						})
 						.then(res => res.json())
 						.then(parsedRes => {
+							console.log("refresh_token worked!");
 							if (parsedRes.id_token) {
 								dispatch(
 									authStoreToken(
