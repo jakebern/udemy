@@ -6,10 +6,12 @@ import { uiStartLoading, uiStopLoading, getAuthToken } from "./index";
 //reducer and will use async code.
 export const addPlace = (placeName, location, image) => {
 	return dispatch => {
+		let authToken;
 		dispatch(uiStartLoading());
 		dispatch(getAuthToken())
 			.catch(() => alert("no valid token"))
 			.then(token => {
+				authToken = token;
 				return fetch(
 					//need to write own logic for cloud functions auth
 					"https://us-central1-udemy-react-9ce28.cloudfunctions.net/storeImage",
@@ -17,12 +19,14 @@ export const addPlace = (placeName, location, image) => {
 						method: "POST",
 						body: JSON.stringify({
 							image: image.base64
-						})
+						}),
+						headers: {
+							Authorization: "Bearer " + authToken
+						}
 					}
 				);
 			})
 			.catch(err => {
-				console.log("caught!");
 				console.log(err);
 				alert("Something went wrong, please try again!");
 				dispatch(uiStopLoading());
@@ -34,10 +38,14 @@ export const addPlace = (placeName, location, image) => {
 					location: location,
 					image: parsedRes.imageUrl
 				};
-				return fetch("https://udemy-react-9ce28.firebaseio.com/places.json", {
-					method: "POST",
-					body: JSON.stringify(placeData)
-				})
+				return fetch(
+					"https://udemy-react-9ce28.firebaseio.com/places.json?auth=" +
+						authToken,
+					{
+						method: "POST",
+						body: JSON.stringify(placeData)
+					}
+				)
 					.then(res => res.json())
 					.then(parsedRes => {
 						dispatch(uiStopLoading());
@@ -54,6 +62,11 @@ export const addPlace = (placeName, location, image) => {
 						alert("Something went wrong, please try again!");
 						dispatch(uiStopLoading());
 					});
+			})
+			.catch(err => {
+				dispatch(uiStopLoading());
+				console.log("you ran me!");
+				console.log(err);
 			});
 	};
 };

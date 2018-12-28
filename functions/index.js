@@ -20,7 +20,7 @@ exports.storeImage = functions.https.onRequest((request, response) => {
 	cors(request, response, () => {
 		if (
 			!request.headers.authorization ||
-			!request.headers.authorization.startWith("Bearer ")
+			!request.headers.authorization.startsWith("Bearer ")
 		) {
 			console.log("No token present!");
 			response.status(403).json({ error: "Unauthorized" });
@@ -28,7 +28,7 @@ exports.storeImage = functions.https.onRequest((request, response) => {
 		}
 
 		let idToken;
-		idToken = request.headers.authorization.split("Bearer")[1]; //part after "Bearer " in auth
+		idToken = request.headers.authorization.split("Bearer ")[1]; //part after "Bearer " in auth
 
 		//validating token
 		admin
