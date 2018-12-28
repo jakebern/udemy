@@ -3,9 +3,15 @@ import { View, Button, StyleSheet, Image } from "react-native";
 import ImagePicker from "react-native-image-picker";
 
 class imageSelector extends Component {
-	state = {
-		pickedImage: null
+	reset = () => {
+		this.setState({
+			pickedImage: null
+		});
 	};
+
+	UNSAFE_componentWillMount() {
+		this.reset();
+	}
 
 	pickImageHandler = () => {
 		//two args - title for page, response

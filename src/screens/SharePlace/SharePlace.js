@@ -24,31 +24,7 @@ class SharePlaceScreen extends Component {
 
 	//can either set in constructor as
 	//this.state or not.
-	state = {
-		controls: {
-			placeName: {
-				value: "", // "test", //"",
-				valid: false, //true, //false,
-				touched: false,
-				validationRules: {
-					notEmpty: true //value here doesn't matter
-				}
-			},
-			location: {
-				// value: {
-				// 	latitude: 38.6226188,
-				// 	longitude: -90.1928209
-				// },
-				value: null,
-				valid: false
-			},
 
-			image: {
-				value: null,
-				valid: false
-			}
-		}
-	};
 	constructor(props) {
 		super(props);
 
@@ -57,6 +33,39 @@ class SharePlaceScreen extends Component {
 		//since have arrow function, don't need to bind (eg. this.onNavigatorEvent.bind(this))
 		this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent);
 	}
+
+	UNSAFE_componentWillMount() {
+		this.reset(); //establishes initial state
+	}
+
+	reset = () => {
+		this.setState({
+			controls: {
+				placeName: {
+					value: "", // "test", //"",
+					valid: false, //true, //false,
+					touched: false,
+					validationRules: {
+						notEmpty: true //value here doesn't matter
+					}
+				},
+				location: {
+					// value: {
+					// 	latitude: 38.6226188,
+					// 	longitude: -90.1928209
+					// },
+					value: null,
+					valid: false
+				},
+
+				image: {
+					value: null,
+					valid: false
+				}
+			}
+		});
+	};
+
 	placeNameChangedHandler = val => {
 		this.setState(prevState => {
 			return {
@@ -79,6 +88,9 @@ class SharePlaceScreen extends Component {
 			this.state.controls.location.value,
 			this.state.controls.image.value
 		);
+		this.reset();
+		this.image.reset();
+		this.map.reset();
 	};
 
 	locationPickedHandler = location => {
@@ -148,8 +160,14 @@ class SharePlaceScreen extends Component {
 						<MainText>
 							<HeadingText>Share a place with us!</HeadingText>
 						</MainText>
-						<ImageSelector onImagePicked={this.imagePickedHandler} />
-						<LocationSelector onLocationPicked={this.locationPickedHandler} />
+						<ImageSelector
+							onImagePicked={this.imagePickedHandler}
+							ref={reference => (this.image = reference)}
+						/>
+						<LocationSelector
+							onLocationPicked={this.locationPickedHandler}
+							ref={reference => (this.map = reference)}
+						/>
 						<InputBox
 							placeData={this.state.controls.placeName}
 							updateInput={this.placeNameChangedHandler}

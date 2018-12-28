@@ -3,18 +3,23 @@ import { View, Button, StyleSheet, Text, Dimensions } from "react-native";
 import MapView from "react-native-maps";
 
 class locationSelector extends Component {
-	state = {
-		focusedLocation: {
-			latitude: 38.6226188,
-			longitude: -90.1928209,
-			latitudeDelta: 0.0122,
-			longitudeDelta:
-				(Dimensions.get("window").width / Dimensions.get("window").height) *
-				0.0122
-		},
-		locationChosen: false
-	};
+	UNSAFE_componentWillMount() {
+		this.reset();
+	}
 
+	reset = () => {
+		this.setState({
+			focusedLocation: {
+				latitude: 38.6226188,
+				longitude: -90.1928209,
+				latitudeDelta: 0.0122,
+				longitudeDelta:
+					(Dimensions.get("window").width / Dimensions.get("window").height) *
+					0.0122
+			},
+			locationChosen: false
+		});
+	};
 	pickLocationHandler = event => {
 		const coords = event.nativeEvent.coordinate;
 		this.map.animateToRegion({
@@ -70,7 +75,8 @@ class locationSelector extends Component {
 			<View style={styles.container}>
 				<MapView
 					style={styles.map}
-					initialRegion={this.state.focusedLocation}
+					initialRegion={this.state.focusedLocation} //never re-rendered
+					region={this.state.locationChosen ? this.state.focusedLocation : null}
 					//don't need to hard code current region in,
 					//because animate to it in pick location handler
 					onPress={this.pickLocationHandler}
