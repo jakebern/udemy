@@ -108,6 +108,9 @@ export const getAuthToken = () => {
 				resolve(token);
 			}
 		});
+		promise.catch(err => {
+			dispatch(authClearStorage());
+		});
 		return promise;
 	};
 };
@@ -119,5 +122,12 @@ export const authAutoSignIn = () => {
 				startMainTabs();
 			})
 			.catch(err => console.log("Failed to fetch token!"));
+	};
+};
+
+export const authClearStorage = () => {
+	return dispatch => {
+		AsyncStorage.removeItem("ud:auth:token");
+		AsyncStorage.removeItem("ud:auth:expiryDate");
 	};
 };
