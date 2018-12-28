@@ -43,18 +43,22 @@ export const tryAuth = (authData, authMode) => {
 					console.log(parsedRes);
 					alert("There's an error, please try again");
 				} else {
-					dispatch(authStoreToken(parsedRes.idToken));
+					dispatch(authStoreToken(parsedRes.idToken, parsedRes.expiresIn));
 					startMainTabs();
 				}
 			});
 	};
 };
 
-export const authStoreToken = token => {
+export const authStoreToken = (token, expiresIn) => {
 	return dispatch => {
 		//still want to store in redux
 		dispatch(setAuthToken(token));
+		const now = new Date();
+		const expiryDate = now.getTime() + expiresIn * 1000; //expiresIn is in s, getTime in ms
+		console.log(now, new Date(expiryDate));
 		AsyncStorage.setItem("ud:auth:token", token);
+		AsyncStorage.setItem("ud:auth:expiryDate", expiryDate.toString());
 	};
 };
 
@@ -70,20 +74,36 @@ export const getAuthToken = () => {
 			//first look in redux store
 			const token = getState().auth.token;
 			if (!token) {
+				let fetchedToken;
 				AsyncStorage.getItem("ud:auth:token")
 					//request fails
 					.catch(err => reject())
 					.then(tokenFromStorage => {
+						fetchedToken = tokenFromStorage;
 						//no valid token check
 						if (!tokenFromStorage) {
 							reject();
 							return;
 						}
 
-						//store in redux store and then resolve / send token back
-						dispatch(setAuthToken(tokenFromStorage));
-						resolve(tokenFromStorage);
-					});
+						//check if token is valid
+						return AsyncStorage.getItem("ud:auth:expiryDate");
+					})
+					.then(expiryDate => {
+						const parsedExpiryDate = new Date(parseInt(expiryDate)); //returns string, need to turn into date
+						const now = new Date();
+						if (parsedExpiryDate > now) {
+							//if parsedExpiry date is null, will return false
+							//store in redux store and then resolve / send token back
+							dispatch(setAuthToken(fetchedToken));
+							resolve(fetchedToken);
+						} else {
+							reject();
+						}
+					})
+					//catch only triggers if have issues accessing store
+					//if don't find the object, will still hit then block
+					.catch(err => reject());
 			} else {
 				resolve(token);
 			}
