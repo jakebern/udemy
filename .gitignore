@@ -2,6 +2,8 @@
 #
 .DS_Store
 
+#	FIREBASE LOGS
+firebase-debug.log
 #Passwords
 functions/udemy-react.json
 
