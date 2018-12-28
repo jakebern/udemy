@@ -9,7 +9,7 @@ import {
 	ActivityIndicator
 } from "react-native";
 import { connect } from "react-redux";
-import { addPlace } from "../../store/actions/index";
+import { addPlace, startAddPlace } from "../../store/actions/index";
 import InputBox from "../../components/InputBox/InputBox";
 import MainText from "../../components/UI/MainText/MainText";
 import ImageSelector from "../../components/ImageSelector/ImageSelector";
@@ -36,6 +36,12 @@ class SharePlaceScreen extends Component {
 
 	UNSAFE_componentWillMount() {
 		this.reset(); //establishes initial state
+	}
+
+	componentDidUpdate() {
+		if (this.props.placeAdded) {
+			this.props.navigator.switchToTab({ tabIndex: 0 });
+		}
 	}
 
 	reset = () => {
@@ -126,6 +132,12 @@ class SharePlaceScreen extends Component {
 		//these are independent of componentDidMount
 		//better to use these events because sometimes React Navigator
 		//will cache React Components
+		if (event.type === "ScreenChangedEvent") {
+			if (event.id === "willAppear") {
+				this.props.onStartAddPlace();
+			}
+		}
+
 		if (event.type === "NavBarButtonPress") {
 			if (event.id === "sideDrawerToggle") {
 				//works by default for iOS, not Android
@@ -204,7 +216,8 @@ const styles = StyleSheet.create({
 //need this to access global state
 const mapStateToProps = state => {
 	return {
-		isLoading: state.ui.isLoading
+		isLoading: state.ui.isLoading,
+		placeAdded: state.places.placeAdded
 	};
 };
 //receives dispatch function as argument
@@ -212,6 +225,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
 	return {
 		//bind something that can use on Props
+		onStartAddPlace: () => dispatch(startAddPlace()),
 		onAddPlace: (placeName, location, image) => {
 			dispatch(addPlace(placeName, location, image));
 		}

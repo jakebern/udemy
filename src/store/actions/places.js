@@ -1,4 +1,9 @@
-import { SET_PLACES, REMOVE_PLACE } from "./actionTypes";
+import {
+	SET_PLACES,
+	REMOVE_PLACE,
+	PLACE_ADDED,
+	START_ADD_PLACE
+} from "./actionTypes";
 import { uiStartLoading, uiStopLoading, getAuthToken } from "./index";
 
 //if we ever return a function instead of an object
@@ -53,7 +58,7 @@ export const addPlace = (placeName, location, image) => {
 							console.log(parsedRes);
 							alert("There was a problem!");
 						} else {
-							alert("Place added!");
+							dispatch(placeAdded());
 						}
 					})
 					.catch(err => {
@@ -68,6 +73,18 @@ export const addPlace = (placeName, location, image) => {
 				console.log("you ran me!");
 				console.log(err);
 			});
+	};
+};
+
+export const placeAdded = () => {
+	return {
+		type: PLACE_ADDED
+	};
+};
+
+export const startAddPlace = () => {
+	return {
+		type: START_ADD_PLACE
 	};
 };
 
