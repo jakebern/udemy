@@ -2,12 +2,17 @@ import { TRY_AUTH } from "./actionTypes";
 import { uiStartLoading, uiStopLoading } from "./index";
 import startMainTabs from "../../screens/MainTabs/startMainTabs";
 
-export const tryAuth = authData => {
+export const tryAuth = (authData, authMode) => {
 	return dispatch => {
-		dispatch(authSignup(authData));
+		if (authMode === "login") {
+			//	dispatch(authLogin(authData))
+		} else {
+			dispatch(authSignup(authData));
+		}
 	};
 };
 const key = "AIzaSyD4OKNEEQOk7hHzwevCaNrNLIBWcX12HUs";
+
 export const authSignup = authData => {
 	return dispatch => {
 		dispatch(uiStartLoading());
