@@ -18,7 +18,7 @@ import MainText from "../../components/UI/MainText/MainText";
 import ButtonWithBackground from "../../components/UI/ButtonWithBackground/ButtonWithBackground";
 import backgroundImage from "../../assets/backgroundpic.jpg";
 import validate from "../../utility/validation";
-import { tryAuth } from "../../store/actions/index";
+import { tryAuth, authAutoSignIn } from "../../store/actions/index";
 
 class AuthScreen extends Component {
 	//need state because want state to listen for dimension changes
@@ -64,6 +64,12 @@ class AuthScreen extends Component {
 	//remove event listener when compenent is not active
 	componentWillUnmount() {
 		Dimensions.removeEventListener("change", this.updateStyles);
+	}
+
+	//will not be executed if close app, and reopen without killing
+	//will be executed on app relaunch.
+	componentDidMount() {
+		this.props.onAutoSignIn();
 	}
 
 	switchAuthModeHandler = () => {
@@ -288,11 +294,14 @@ const styles = StyleSheet.create({
 
 //makes aware of things in reducer
 const mapStateToProps = state => {
-	return { isLoading: state.ui.isLoading };
+	return {
+		isLoading: state.ui.isLoading
+	};
 };
 
 const mapDispatchToProps = dispatch => {
 	return {
+		onAutoSignIn: () => dispatch(authAutoSignIn()),
 		onTryAuth: (authData, authMode) => dispatch(tryAuth(authData, authMode))
 	};
 };

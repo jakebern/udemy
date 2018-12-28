@@ -71,9 +71,15 @@ export const getAuthToken = () => {
 			const token = getState().auth.token;
 			if (!token) {
 				AsyncStorage.getItem("ud:auth:token")
-					//no token
+					//request fails
 					.catch(err => reject())
 					.then(tokenFromStorage => {
+						//no valid token check
+						if (!tokenFromStorage) {
+							reject();
+							return;
+						}
+
 						//store in redux store and then resolve / send token back
 						dispatch(setAuthToken(tokenFromStorage));
 						resolve(tokenFromStorage);
@@ -83,5 +89,15 @@ export const getAuthToken = () => {
 			}
 		});
 		return promise;
+	};
+};
+
+export const authAutoSignIn = () => {
+	return dispatch => {
+		dispatch(getAuthToken())
+			.then(token => {
+				startMainTabs();
+			})
+			.catch(err => console.log("Failed to fetch token!"));
 	};
 };
