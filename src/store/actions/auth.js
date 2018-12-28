@@ -1,7 +1,8 @@
 import { AsyncStorage } from "react-native";
-import { TRY_AUTH, AUTH_SET_TOKEN } from "./actionTypes";
+import { TRY_AUTH, AUTH_SET_TOKEN, AUTH_REMOVE_TOKEN } from "./actionTypes";
 import { uiStartLoading, uiStopLoading } from "./index";
 import startMainTabs from "../../screens/MainTabs/startMainTabs";
+import App from "../../../App";
 
 const API_KEY = "AIzaSyD4OKNEEQOk7hHzwevCaNrNLIBWcX12HUs";
 export const tryAuth = (authData, authMode) => {
@@ -61,7 +62,7 @@ export const authStoreToken = (token, expiresIn, refreshToken) => {
 		//still want to store in redux
 		dispatch(setAuthToken(token));
 		const now = new Date();
-		const expiryDate = now.getTime() + 20 * 1000; //expiresIn is in s, getTime in ms
+		const expiryDate = now.getTime() + expiresIn * 1000; //expiresIn is in s, getTime in ms
 		console.log(refreshToken);
 		AsyncStorage.setItem("ud:auth:token", token);
 		AsyncStorage.setItem("ud:auth:refreshToken", refreshToken);
@@ -175,5 +176,21 @@ export const authClearStorage = () => {
 	return dispatch => {
 		AsyncStorage.removeItem("ud:auth:token");
 		AsyncStorage.removeItem("ud:auth:expiryDate");
+		return AsyncStorage.removeItem("ud:auth:refreshToken");
+	};
+};
+
+//clear redux state tokens
+export const authRemoveToken = () => {
+	return {
+		type: AUTH_REMOVE_TOKEN
+	};
+};
+
+export const logout = () => {
+	return dispatch => {
+		dispatch(authClearStorage()).then(() => App());
+		dispatch(authRemoveToken());
+		//wait until you delete refresh token so actually are logged out
 	};
 };

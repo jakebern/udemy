@@ -37,12 +37,19 @@ Navigation.registerComponent(
   Provider
 );
 
-Navigation.registerComponent("udemy-react.SideDrawer", () => SideDrawer);
+Navigation.registerComponent(
+  "udemy-react.SideDrawer",
+  () => SideDrawer,
+  store,
+  Provider
+);
 
 //Start a App
-Navigation.startSingleScreenApp({
-  screen: {
-    screen: "udemy-react.AuthScreen",
-    title: "Login"
-  }
-});
+//exporting so can call this on logout
+export default () =>
+  Navigation.startSingleScreenApp({
+    screen: {
+      screen: "udemy-react.AuthScreen",
+      title: "Login"
+    }
+  });
