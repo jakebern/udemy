@@ -17,6 +17,7 @@ export const addPlace = (placeName, location, image) => {
 			}
 		)
 			.catch(err => {
+				console.log("caught!");
 				console.log(err);
 				alert("Something went wrong, please try again!");
 				dispatch(uiStopLoading());
@@ -32,14 +33,20 @@ export const addPlace = (placeName, location, image) => {
 					method: "POST",
 					body: JSON.stringify(placeData)
 				})
-					.catch(err => {
-						console.log(err);
-						alert("Something went wrong, please try again!");
-						dispatch(uiStopLoading());
-					})
 					.then(res => res.json())
 					.then(parsedRes => {
-						console.log(parsedRes);
+						dispatch(uiStopLoading());
+						if (parsedRes.error) {
+							console.log(parsedRes);
+							alert("There was a problem!");
+						} else {
+							alert("Place added!");
+						}
+					})
+					.catch(err => {
+						console.log("caught!");
+						console.log(err);
+						alert("Something went wrong, please try again!");
 						dispatch(uiStopLoading());
 					});
 			});
@@ -57,10 +64,6 @@ export const setPlaces = places => {
 export const getPlaces = () => {
 	return dispatch => {
 		fetch("https://udemy-react-9ce28.firebaseio.com/places.json")
-			.catch(err => {
-				console.log(err);
-				alert("Something went wrong!");
-			})
 			.then(res => res.json())
 			.then(parsedRes => {
 				const places = [];
@@ -74,6 +77,10 @@ export const getPlaces = () => {
 					});
 				}
 				dispatch(setPlaces(places));
+			})
+			.catch(err => {
+				alert("Something went wrong!");
+				console.log(err);
 			});
 	};
 };
@@ -84,15 +91,15 @@ export const deletePlace = key => {
 		fetch("https://udemy-react-9ce28.firebaseio.com/places/" + key + ".json", {
 			method: "DELETE"
 		})
+			.then(res => res.json())
+			.then(parsedRes => console.log("done"))
 			.catch(err => {
 				//if delete fails, should re-add the place in case in failed
 				//option 1: in reducer, hold deleted places array
 				//option 2: create temp copy of deleted place
 				alert("Something went wrong, sorry!");
 				console.log(err);
-			})
-			.then(res => res.json())
-			.then(parsedRes => console.log("done"));
+			});
 	};
 };
 

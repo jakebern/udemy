@@ -200,13 +200,6 @@ const mapDispatchToProps = dispatch => {
 	};
 };
 
-//addPlace is function that takes in place_name
-//returns an object
-//		type: ADD_PLACE,
-//		placeName: placeName
-//this object is then passed on reducer
-//where reducer performs opps
-
 export default connect(
 	mapStateToProps,
 	mapDispatchToProps
